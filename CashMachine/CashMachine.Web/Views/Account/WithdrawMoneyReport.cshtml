@@ -1,0 +1,30 @@
+﻿@model CashMachine.Web.Models.WithdrawMoneyReportViewModel
+
+@{
+    ViewBag.Title = "WithdrawMoneyReport";
+}
+
+<h2>Отчет по снятию денег</h2>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Номер карты</th>
+            <th>Дата/время</th>
+            <th>Снятая сумма</th>
+            <th>Остаток на счету</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>@Model.CardNumber</td>
+            <td>@Model.Date</td>
+            <td>@Model.WithdrawedSum</td>
+            <td>@Model.Balance</td>
+        </tr>
+    </tbody>
+    <tfoot>
+
+    </tfoot>
+</table>
+@Html.ActionLink("Назад", "Operation", "Account", null, new { @class = "btn btn-success" })
+@Html.ActionLink("Выход", "ExitAccount", "Account", null, new { @class = "btn btn-success" })

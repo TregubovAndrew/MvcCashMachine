@@ -1,0 +1,16 @@
+﻿
+@{
+    ViewBag.Title = "Operation";
+}
+
+<h2>Операции</h2>
+
+<div class="col-sm-4">
+   
+    @Html.ActionLink("Баланс", "Balance", "Account",null, new { @class = "btn btn-success" })
+    
+    @Html.ActionLink("Снять сумму", "WithdrawMoney", "Account",null, new { @class = "btn btn-success" })
+
+    @Html.ActionLink("Выход", "ExitAccount", "Account", null, new { @class = "btn btn-success" })
+
+</div>

@@ -1,0 +1,28 @@
+﻿@model CashMachine.Web.Models.AccountViewModel
+
+@{
+    ViewBag.Title = "Balance";
+}
+
+<h2>Баланс</h2>
+<table class="table">
+    <thead>
+    <tr>
+        <th>Номер карты</th>
+        <th>Дата</th>
+        <th>Сумма на счету</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td>@Model.CardNumber</td>
+        <td>@DateTime.Now</td>
+        <td>@Model.Money</td>
+    </tr>
+    </tbody>
+    <tfoot>
+
+    </tfoot>
+</table>
+@Html.ActionLink("Назад", "Operation", "Account", null, new { @class = "btn btn-success" })
+@Html.ActionLink("Выход", "ExitAccount", "Account", null, new { @class = "btn btn-success" })
