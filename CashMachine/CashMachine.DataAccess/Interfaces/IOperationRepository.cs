@@ -5,10 +5,10 @@ using System.Text;
 using System.Threading.Tasks;
 using CashMachine.DataAccess.Entities;
 
-namespace CashMachine.BusinessLogic.Interfaces
+namespace CashMachine.DataAccess.Interfaces
 {
-    public interface IOperationHistoryService
+    public interface IOperationRepository
     {
-        void CreateOperationHistory(OperationHistory operationHistory);
+        void CreateOperation(Operation operation);
     }
 }

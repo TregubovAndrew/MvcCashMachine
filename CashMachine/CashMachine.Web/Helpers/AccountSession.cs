@@ -13,11 +13,5 @@ namespace CashMachine.Web.Helpers
 
         public decimal Money { get; set; }
 
-        public int NumberOfAttempt { get; set; }
-
-        public AccountSession()
-        {
-            NumberOfAttempt = 4;
-        }
     }
 }

@@ -7,13 +7,13 @@ namespace CashMachine.DataAccess.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.3-40302")]
-    public sealed partial class Initial : IMigrationMetadata
+    public sealed partial class AddDateOfLastFailedAttempt : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(Initial));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(AddDateOfLastFailedAttempt));
         
         string IMigrationMetadata.Id
         {
-            get { return "201603081238166_Initial"; }
+            get { return "201603101304240_AddDateOfLastFailedAttempt"; }
         }
         
         string IMigrationMetadata.Source

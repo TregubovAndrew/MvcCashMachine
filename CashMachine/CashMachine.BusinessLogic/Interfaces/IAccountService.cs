@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CashMachine.BusinessLogic.Services;
 using CashMachine.DataAccess.Entities;
 
 namespace CashMachine.BusinessLogic.Interfaces
@@ -11,10 +12,16 @@ namespace CashMachine.BusinessLogic.Interfaces
     {
         Account GetAccountById(int id);
 
-        void EditAccount(Account account);
-
         Account GetAccountByCardNumber (string cardNumber);
 
         void BlockAccount(Account account);
+
+        AccountService.AuthResult Auth(string cardNumber, int pinCode);
+
+        bool WithdrawMoneySuccess(Account account, decimal sum);
+
+        bool BalanceOperationSuccess(Account account);
+
+        void UnBlockAccount(Account account);
     }
 }

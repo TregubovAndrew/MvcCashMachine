@@ -48,12 +48,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Class1.cs" />
     <Compile Include="Interfaces\IAccountService.cs" />
-    <Compile Include="Interfaces\IOperationHistoryService.cs" />
+    <Compile Include="Interfaces\IOperationService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\AccountService.cs" />
-    <Compile Include="Services\OperationHistoryService.cs" />
+    <Compile Include="Services\OperationService.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

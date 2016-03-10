@@ -14,11 +14,15 @@ namespace CashMachine.DataAccess.Entities
 
         public int PinCode { get; set; }
 
-        public decimal Money { get; set; }
+        public decimal AvailableBalance { get; set; }
 
         public bool IsBlocked { get; set; }
 
-        public virtual ICollection<OperationHistory> OperationHistories { get; set; }
+        public int AttemptsCount { get; set; }
+
+        public DateTime? DateOfLastFailedAttempt { get; set; }
+
+        public virtual ICollection<Operation> Operations { get; set; }
 
     }
 }

@@ -7,13 +7,13 @@ namespace CashMachine.DataAccess.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.3-40302")]
-    public sealed partial class first : IMigrationMetadata
+    public sealed partial class RenameAndAddNewProperties : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(first));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(RenameAndAddNewProperties));
         
         string IMigrationMetadata.Id
         {
-            get { return "201603081248089_first"; }
+            get { return "201603101117272_RenameAndAddNewProperties"; }
         }
         
         string IMigrationMetadata.Source

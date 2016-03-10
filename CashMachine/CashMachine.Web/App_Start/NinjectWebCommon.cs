@@ -67,8 +67,8 @@ namespace CashMachine.Web
         {
             kernel.Bind<IAccountRepository>().To<AccountRepository>();
             kernel.Bind<IAccountService>().To<AccountService>();
-            kernel.Bind<IOperationHistoryRepository>().To<OperationHistoryRepository>();
-            kernel.Bind<IOperationHistoryService>().To<OperationHistoryService>();
+            kernel.Bind<IOperationRepository>().To<OperationRepository>();
+            kernel.Bind<IOperationService>().To<OperationService>();
             kernel.Bind<CashMachineDbContext>().ToSelf().InRequestScope();
         }        
     }

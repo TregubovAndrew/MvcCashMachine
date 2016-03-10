@@ -50,54 +50,41 @@
   <ItemGroup>
     <Compile Include="CashMachineDbContext.cs" />
     <Compile Include="Entities\Account.cs" />
-    <Compile Include="Entities\OperationHistory.cs" />
+    <Compile Include="Entities\Operation.cs" />
+    <Compile Include="HashManager.cs" />
     <Compile Include="Interfaces\IAccountRepository.cs" />
-    <Compile Include="Interfaces\IOperationHistoryRepository.cs" />
-    <Compile Include="Migrations\201603081238166_Initial.cs" />
-    <Compile Include="Migrations\201603081238166_Initial.Designer.cs">
-      <DependentUpon>201603081238166_Initial.cs</DependentUpon>
+    <Compile Include="Interfaces\IOperationRepository.cs" />
+    <Compile Include="Migrations\201603101103470_Initial.cs" />
+    <Compile Include="Migrations\201603101103470_Initial.Designer.cs">
+      <DependentUpon>201603101103470_Initial.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201603081248089_first.cs" />
-    <Compile Include="Migrations\201603081248089_first.Designer.cs">
-      <DependentUpon>201603081248089_first.cs</DependentUpon>
+    <Compile Include="Migrations\201603101117272_RenameAndAddNewProperties.cs" />
+    <Compile Include="Migrations\201603101117272_RenameAndAddNewProperties.Designer.cs">
+      <DependentUpon>201603101117272_RenameAndAddNewProperties.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201603081628577_second.cs" />
-    <Compile Include="Migrations\201603081628577_second.Designer.cs">
-      <DependentUpon>201603081628577_second.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201603091311125_third.cs" />
-    <Compile Include="Migrations\201603091311125_third.Designer.cs">
-      <DependentUpon>201603091311125_third.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201603091315453_fourth.cs" />
-    <Compile Include="Migrations\201603091315453_fourth.Designer.cs">
-      <DependentUpon>201603091315453_fourth.cs</DependentUpon>
+    <Compile Include="Migrations\201603101304240_AddDateOfLastFailedAttempt.cs" />
+    <Compile Include="Migrations\201603101304240_AddDateOfLastFailedAttempt.Designer.cs">
+      <DependentUpon>201603101304240_AddDateOfLastFailedAttempt.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\AccountRepository.cs" />
-    <Compile Include="Repositories\OperationHistoryRepository.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Migrations\201603081238166_Initial.resx">
-      <DependentUpon>201603081238166_Initial.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201603081248089_first.resx">
-      <DependentUpon>201603081248089_first.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201603081628577_second.resx">
-      <DependentUpon>201603081628577_second.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201603091311125_third.resx">
-      <DependentUpon>201603091311125_third.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201603091315453_fourth.resx">
-      <DependentUpon>201603091315453_fourth.cs</DependentUpon>
-    </EmbeddedResource>
+    <Compile Include="Repositories\OperationRepository.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201603101103470_Initial.resx">
+      <DependentUpon>201603101103470_Initial.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201603101117272_RenameAndAddNewProperties.resx">
+      <DependentUpon>201603101117272_RenameAndAddNewProperties.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201603101304240_AddDateOfLastFailedAttempt.resx">
+      <DependentUpon>201603101304240_AddDateOfLastFailedAttempt.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

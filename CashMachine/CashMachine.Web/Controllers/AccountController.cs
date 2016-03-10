@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Web;
 using System.Web.Mvc;
 using CashMachine.BusinessLogic.Interfaces;
-using CashMachine.DataAccess.Entities;
+using CashMachine.BusinessLogic.Services;
 using CashMachine.Web.Helpers;
 using CashMachine.Web.Models;
 
@@ -15,12 +12,12 @@ namespace CashMachine.Web.Controllers
     {
         // GET: Account
         private readonly IAccountService _accountService;
-        private readonly IOperationHistoryService _operationHistoryService;
+        private readonly IOperationService _operationService;
 
-        public AccountController(IAccountService accountService, IOperationHistoryService operationHistoryService)
+        public AccountController(IAccountService accountService, IOperationService operationService)
         {
             _accountService = accountService;
-            _operationHistoryService = operationHistoryService;
+            _operationService = operationService;
         }
 
         public ActionResult Index()
@@ -32,11 +29,11 @@ namespace CashMachine.Web.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Index(CardNumberViewModel model)
         {
-            if (ModelState.IsValid && model.CardNumber!=null)
+            if (ModelState.IsValid && model.CardNumber != null)
             {
                 var account = _accountService.GetAccountByCardNumber(model.CardNumber);
-                if(model.CardNumber.Length < 16)
-                    ModelState.AddModelError("","Введите все 16 цифр Вашей карточки");
+                if (model.CardNumber.Length < 16)
+                    ModelState.AddModelError("", "Введите все 16 цифр Вашей карточки");
                 if (account == null)
                 {
                     ModelState.AddModelError("", "Мы не смогли найти Вашу карточку");
@@ -74,13 +71,14 @@ namespace CashMachine.Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                var account = _accountService.GetAccountByCardNumber(GetCurrentAccountInSession().CardNumber);
-                if (account.PinCode == model.PinCode)
+
+                var check = _accountService.Auth(GetCurrentAccountInSession().CardNumber, model.PinCode);
+
+                if (check == AccountService.AuthResult.Success)
                     return RedirectToAction("Operation");
 
-                if (GetCurrentAccountInSession().NumberOfAttempt <= 1)
+                if (check == AccountService.AuthResult.Blocked)
                 {
-                    _accountService.BlockAccount(account);
                     Session.Abandon();
                     return View("Error", new ErrorViewModel
                     {
@@ -88,13 +86,15 @@ namespace CashMachine.Web.Controllers
                         ReturnUrl = Request.Url.AbsolutePath
                     });
                 }
-                else
+                if (check == AccountService.AuthResult.Fail)
                 {
-                    GetCurrentAccountInSession().NumberOfAttempt--;
-                    ModelState.AddModelError("",String.Format("У Вас осталось {0} попытки чтобы ввести правильный PinCode",GetCurrentAccountInSession().NumberOfAttempt));
+                    var account = _accountService.GetAccountByCardNumber(GetCurrentAccountInSession().CardNumber);
+                    ModelState.AddModelError("",
+                        String.Format("У Вас осталось {0} попытки чтобы ввести правильный PinCode",
+                            account.AttemptsCount));
                 }
             }
-            return View(model);
+            return View();
         }
 
         private AccountSession GetCurrentAccountInSession()
@@ -110,7 +110,7 @@ namespace CashMachine.Web.Controllers
 
         public ActionResult Operation()
         {
-            if(GetCurrentAccountInSession().CardNumber==null && GetCurrentAccountInSession().PinCode==0)
+            if (GetCurrentAccountInSession().CardNumber == null && GetCurrentAccountInSession().PinCode == 0)
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             return View();
         }
@@ -121,19 +121,15 @@ namespace CashMachine.Web.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
             var currentAccount = _accountService.GetAccountByCardNumber(GetCurrentAccountInSession().CardNumber);
-            _operationHistoryService.CreateOperationHistory(new OperationHistory
+            if (_accountService.BalanceOperationSuccess(currentAccount))
             {
-                CardNumber = currentAccount.CardNumber,
-                DateTime = DateTime.Now,
-                CodeOfOperation = "просмотр баланса",
-                AccountId = currentAccount.Id
-            });
-
-            return View(new AccountViewModel
-            {
-                CardNumber = currentAccount.CardNumber,
-                Money = currentAccount.Money
-            });
+                return View(new AccountViewModel
+                {
+                    CardNumber = currentAccount.CardNumber,
+                    Money = currentAccount.AvailableBalance
+                });
+            }
+            return View();
         }
 
         public ActionResult WithdrawMoney()
@@ -149,35 +145,24 @@ namespace CashMachine.Web.Controllers
         public ActionResult WithdrawMoney(AccountViewModel model)
         {
             var currentAccount = _accountService.GetAccountByCardNumber(GetCurrentAccountInSession().CardNumber);
-            if (model.Money <= currentAccount.Money)
+            if (_accountService.WithdrawMoneySuccess(currentAccount, model.Money))
             {
-                currentAccount.Money -= model.Money;
-                _accountService.EditAccount(currentAccount);
-                _operationHistoryService.CreateOperationHistory(new OperationHistory
-                {
-                    CardNumber = currentAccount.CardNumber,
-                    DateTime = DateTime.Now,
-                    CodeOfOperation = "снятие денег",
-                    AccountId = currentAccount.Id
-                });
                 return View("WithdrawMoneyReport", new WithdrawMoneyReportViewModel
                 {
                     CardNumber = currentAccount.CardNumber,
                     WithdrawedSum = model.Money,
-                    Balance = currentAccount.Money,
+                    Balance = currentAccount.AvailableBalance,
                     Date = DateTime.Now
                 });
             }
-            else
+
+            return View("Error", new ErrorViewModel
             {
-                //ModelState.AddModelError("","На Вашем счету недостаточно средств");
-                return View("Error", new ErrorViewModel
-                {
-                    Message = "На Вашем счету недостаточно средств",
-                    ReturnUrl = Request.Url.AbsolutePath
-                });
-            }
-            //return View(model);
+                Message = "На Вашем счету недостаточно средств",
+                ReturnUrl = Request.Url.AbsolutePath
+            });
+
+
         }
 
         public ActionResult WithdrawMoneyReport()

@@ -1,3 +1,6 @@
+using CashMachine.DataAccess.Entities;
+using CashMachine.Web.Helpers;
+
 namespace CashMachine.DataAccess.Migrations
 {
     using System;
@@ -26,6 +29,10 @@ namespace CashMachine.DataAccess.Migrations
             //      new Person { FullName = "Rowan Miller" }
             //    );
             //
+            context.Accounts.Add(new Account
+            {
+                CardNumber = "1234567890123456",
+                PinCode = HashManager.Hash(),
         }
     }
 }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CashMachine.DataAccess.Entities
 {
-    public class OperationHistory
+    public class Operation
     {
         public int Id { get; set; }
 

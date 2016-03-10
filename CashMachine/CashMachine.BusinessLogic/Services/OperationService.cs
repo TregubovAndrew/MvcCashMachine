@@ -9,18 +9,18 @@ using CashMachine.DataAccess.Interfaces;
 
 namespace CashMachine.BusinessLogic.Services
 {
-    public class OperationHistoryService : IOperationHistoryService
+    public class OperationService : IOperationService
     {
-        private readonly IOperationHistoryRepository _operationHistoryRepository;
+        private readonly IOperationRepository _operationHistoryRepository;
 
-        public OperationHistoryService(IOperationHistoryRepository operationHistoryRepository)
+        public OperationService(IOperationRepository operationHistoryRepository)
         {
             _operationHistoryRepository = operationHistoryRepository;
         }
 
-        public void CreateOperationHistory(OperationHistory operationHistory)
+        public void CreateOperation(Operation operation)
         {
-            _operationHistoryRepository.CreateOperationHistory(operationHistory);
+            _operationHistoryRepository.CreateOperation(operation);
         }
     }
 }

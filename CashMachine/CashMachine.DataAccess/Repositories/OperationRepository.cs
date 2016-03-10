@@ -8,18 +8,18 @@ using CashMachine.DataAccess.Interfaces;
 
 namespace CashMachine.DataAccess.Repositories
 {
-    public class OperationHistoryRepository : IOperationHistoryRepository
+    public class OperationRepository : IOperationRepository
     {
         private readonly CashMachineDbContext _db;
 
-        public OperationHistoryRepository(CashMachineDbContext db)
+        public OperationRepository(CashMachineDbContext db)
         {
             _db = db;
         }
 
-        public void CreateOperationHistory(OperationHistory operationHistory)
+        public void CreateOperation(Operation operation)
         {
-            _db.OperationHistories.Add(operationHistory);
+            _db.Operations.Add(operation);
             _db.SaveChanges();
         }
     }
