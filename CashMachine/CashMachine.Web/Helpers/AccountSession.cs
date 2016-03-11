@@ -7,11 +7,14 @@ namespace CashMachine.Web.Helpers
 {
     public class AccountSession
     {
-         public string CardNumber { get; set; }
+        public string CardNumber { get; set; }
 
-        public int PinCode { get; set; }
+        public bool IsAuthenticated { get; set; }
 
-        public decimal Money { get; set; }
+        public AccountSession()
+        {
+            IsAuthenticated = false;
+        }
 
     }
 }

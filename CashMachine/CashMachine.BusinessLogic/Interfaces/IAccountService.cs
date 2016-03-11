@@ -16,11 +16,11 @@ namespace CashMachine.BusinessLogic.Interfaces
 
         void BlockAccount(Account account);
 
-        AccountService.AuthResult Auth(string cardNumber, int pinCode);
+        AccountService.AuthResult Auth(string cardNumber, string pinCode);
 
-        bool WithdrawMoneySuccess(Account account, decimal sum);
+        bool TryWithdrawMoney(Account account, decimal sum);
 
-        bool BalanceOperationSuccess(Account account);
+        void BalanceOperation(Account account);
 
         void UnBlockAccount(Account account);
     }

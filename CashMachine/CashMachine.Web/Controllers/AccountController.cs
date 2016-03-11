@@ -3,6 +3,7 @@ using System.Net;
 using System.Web.Mvc;
 using CashMachine.BusinessLogic.Interfaces;
 using CashMachine.BusinessLogic.Services;
+using CashMachine.Web.Filters;
 using CashMachine.Web.Helpers;
 using CashMachine.Web.Models;
 
@@ -12,12 +13,10 @@ namespace CashMachine.Web.Controllers
     {
         // GET: Account
         private readonly IAccountService _accountService;
-        private readonly IOperationService _operationService;
 
-        public AccountController(IAccountService accountService, IOperationService operationService)
+        public AccountController(IAccountService accountService)
         {
             _accountService = accountService;
-            _operationService = operationService;
         }
 
         public ActionResult Index()
@@ -56,12 +55,10 @@ namespace CashMachine.Web.Controllers
             return View(model);
         }
 
-        //[HttpPost]
+        
+        [CheckCardNumberInput]
         public ActionResult PinCode()
         {
-            if (GetCurrentAccountInSession().CardNumber == null)
-                return RedirectToAction("Index");
-
             return View();
         }
 
@@ -71,11 +68,13 @@ namespace CashMachine.Web.Controllers
         {
             if (ModelState.IsValid)
             {
-
                 var check = _accountService.Auth(GetCurrentAccountInSession().CardNumber, model.PinCode);
 
                 if (check == AccountService.AuthResult.Success)
+                {
+                    GetCurrentAccountInSession().IsAuthenticated = true;
                     return RedirectToAction("Operation");
+                }
 
                 if (check == AccountService.AuthResult.Blocked)
                 {
@@ -88,10 +87,7 @@ namespace CashMachine.Web.Controllers
                 }
                 if (check == AccountService.AuthResult.Fail)
                 {
-                    var account = _accountService.GetAccountByCardNumber(GetCurrentAccountInSession().CardNumber);
-                    ModelState.AddModelError("",
-                        String.Format("У Вас осталось {0} попытки чтобы ввести правильный PinCode",
-                            account.AttemptsCount));
+                    ModelState.AddModelError("", "Вы неправильно ввели Pin Code");
                 }
             }
             return View();
@@ -108,35 +104,30 @@ namespace CashMachine.Web.Controllers
             return account;
         }
 
+        [CheckCardNumberInput]
+        [CheckFullAuthentication]
         public ActionResult Operation()
         {
-            if (GetCurrentAccountInSession().CardNumber == null && GetCurrentAccountInSession().PinCode == 0)
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             return View();
         }
 
+        [CheckCardNumberInput]
+        [CheckFullAuthentication]
         public ActionResult Balance()
         {
-            if (GetCurrentAccountInSession().CardNumber == null && GetCurrentAccountInSession().PinCode == 0)
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-
             var currentAccount = _accountService.GetAccountByCardNumber(GetCurrentAccountInSession().CardNumber);
-            if (_accountService.BalanceOperationSuccess(currentAccount))
+            _accountService.BalanceOperation(currentAccount);
+            return View(new AccountViewModel
             {
-                return View(new AccountViewModel
-                {
-                    CardNumber = currentAccount.CardNumber,
-                    Money = currentAccount.AvailableBalance
-                });
-            }
-            return View();
+                CardNumber = currentAccount.CardNumber,
+                Money = currentAccount.AvailableBalance
+            });
         }
 
+        [CheckCardNumberInput]
+        [CheckFullAuthentication]
         public ActionResult WithdrawMoney()
         {
-            if (GetCurrentAccountInSession().CardNumber == null && GetCurrentAccountInSession().PinCode == 0)
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-
             return View();
         }
 
@@ -145,7 +136,7 @@ namespace CashMachine.Web.Controllers
         public ActionResult WithdrawMoney(AccountViewModel model)
         {
             var currentAccount = _accountService.GetAccountByCardNumber(GetCurrentAccountInSession().CardNumber);
-            if (_accountService.WithdrawMoneySuccess(currentAccount, model.Money))
+            if (_accountService.TryWithdrawMoney(currentAccount, model.Money))
             {
                 return View("WithdrawMoneyReport", new WithdrawMoneyReportViewModel
                 {
@@ -165,11 +156,15 @@ namespace CashMachine.Web.Controllers
 
         }
 
+        [CheckCardNumberInput]
+        [CheckFullAuthentication]
         public ActionResult WithdrawMoneyReport()
         {
             return View();
         }
 
+        [CheckCardNumberInput]
+        [CheckFullAuthentication]
         public ActionResult ExitAccount()
         {
             Session.Abandon();

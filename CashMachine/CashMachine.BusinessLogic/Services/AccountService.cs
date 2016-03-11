@@ -6,18 +6,17 @@ using System.Threading.Tasks;
 using CashMachine.BusinessLogic.Interfaces;
 using CashMachine.DataAccess.Entities;
 using CashMachine.DataAccess.Interfaces;
+using CashMachine.Web.Helpers;
 
 namespace CashMachine.BusinessLogic.Services
 {
     public class AccountService : IAccountService
     {
         private readonly IAccountRepository _accountRepository;
-        private readonly IOperationRepository _operationRepository;
 
-        public AccountService(IAccountRepository accountRepository, IOperationRepository operationRepository)
+        public AccountService(IAccountRepository accountRepository)
         {
             _accountRepository = accountRepository;
-            _operationRepository = operationRepository;
         }
 
         public Account GetAccountById(int id)
@@ -43,8 +42,9 @@ namespace CashMachine.BusinessLogic.Services
 
         public void UnBlockAccount(Account account)
         {
+            const int generalAmountOfAttempts = 0;
             account.IsBlocked = false;
-            account.AttemptsCount = 4;
+            account.AttemptsCount = generalAmountOfAttempts;
             EditAccount(account);
         }
 
@@ -55,30 +55,20 @@ namespace CashMachine.BusinessLogic.Services
             Blocked
         }
 
-        public AuthResult Auth(string cardNumber, int pinCode)
+        public AuthResult Auth(string cardNumber, string pinCode)
         {
             var account = GetAccountByCardNumber(cardNumber);
-            //if (account.AttemptsCount > 4 && (DateTime.Now - account.DateOfLastFailedAttempt).Value.TotalHours <= 1 && !account.IsBlocked)
-            //{
-            //    BlockAccount(account);
-            //    return AuthResult.Blocked;
-            //}
-            //if ((DateTime.Now - account.DateOfLastFailedAttempt).Value.TotalHours > 1 && account.IsBlocked && account.PinCode == pinCode)
-            //{
-            //    UnBlockAccount(account);
-            //    account.AttemptsCount--;
-            //    EditAccount(account);
-            //    return AuthResult.Success;
-            //}
-            if (account.PinCode == pinCode)
+            const int zeroAttemptsCount = 0;
+            const int maxAttemptsCount = 3;
+            if (account.PinCode == HashManager.HashPassword(pinCode))
             {
-                account.AttemptsCount = 4;
+                account.AttemptsCount = zeroAttemptsCount;
                 EditAccount(account);
                 return AuthResult.Success;
             }
-            if (account.AttemptsCount <= 1 && !account.IsBlocked)
+            if (account.AttemptsCount >= maxAttemptsCount && !account.IsBlocked)
             {
-                account.AttemptsCount--;
+                account.AttemptsCount++;
                 BlockAccount(account);
                 return AuthResult.Blocked;
             }
@@ -86,47 +76,38 @@ namespace CashMachine.BusinessLogic.Services
                 return AuthResult.Blocked;
 
             account.DateOfLastFailedAttempt = DateTime.Now;
-            account.AttemptsCount--;
+            account.AttemptsCount++;
             EditAccount(account);
             return AuthResult.Fail;
 
         }
 
-        public bool WithdrawMoneySuccess(Account account, decimal sum)
+        public bool TryWithdrawMoney(Account account, decimal sum)
         {
-            if (account != null)
+            if (account.AvailableBalance - sum >= 0)
             {
-                if (account.AvailableBalance - sum >= 0)
+                account.AvailableBalance -= sum;
+                account.Operations.Add(new Operation
                 {
-                    account.AvailableBalance -= sum;
-                    EditAccount(account);
-                    _operationRepository.CreateOperation(new Operation
-                    {
-                        CardNumber = account.CardNumber,
-                        DateTime = DateTime.Now,
-                        CodeOfOperation = "снятие денег",
-                        AccountId = account.Id
-                    });
-                    return true;
-                }
+                    DateTime = DateTime.Now,
+                    CodeOfOperation = "снятие денег",
+                    AccountId = account.Id
+                });
+                EditAccount(account);
+                return true;
             }
             return false;
         }
 
-        public bool BalanceOperationSuccess(Account account)
+        public void BalanceOperation(Account account)
         {
-            if (account != null)
+            account.Operations.Add(new Operation
             {
-                _operationRepository.CreateOperation(new Operation
-                {
-                    CardNumber = account.CardNumber,
-                    DateTime = DateTime.Now,
-                    CodeOfOperation = "просмотр баланса",
-                    AccountId = account.Id
-                });
-                return true;
-            }
-            return false;
+                DateTime = DateTime.Now,
+                CodeOfOperation = "просмотр баланса",
+                AccountId = account.Id
+            });
+            EditAccount(account);
         }
     }
 }

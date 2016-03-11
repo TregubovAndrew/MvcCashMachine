@@ -4,6 +4,11 @@
     ViewBag.Title = "Index";
 }
 
+@*<script>
+    var $size = 16;
+    $('.number').click($inputForKeys($('#CardNumber'), $size)
+    );
+</script>*@
 <h2>Введите номер карточки</h2>
 <div class="col-sm-4">
     <div>
@@ -12,7 +17,6 @@
         {
             @Html.AntiForgeryToken()
             @Html.ValidationSummary(true)
-            @*@Html.ValidationMessageFor(m => m.CardNumber)*@
             @Html.EditorFor(m => m.CardNumber, new { htmlAttributes = new { @class = "form-control", @style = "width:1000px", @readonly = "true" } })
            
             <div class="col-sm-4 btn number" value="1">1</div>

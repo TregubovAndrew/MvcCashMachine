@@ -29,10 +29,31 @@ namespace CashMachine.DataAccess.Migrations
             //      new Person { FullName = "Rowan Miller" }
             //    );
             //
-            context.Accounts.Add(new Account
+            context.Accounts.AddOrUpdate(a => a.CardNumber,
+            new Account
             {
                 CardNumber = "1234567890123456",
-                PinCode = HashManager.Hash(),
+                PinCode = HashManager.HashPassword("1234"),
+                AvailableBalance = 1000,
+                IsBlocked = false,
+                AttemptsCount = 0
+            },
+            new Account
+            {
+                CardNumber = "3333333333333333",
+                PinCode = HashManager.HashPassword("3333"),
+                AvailableBalance = 1000,
+                IsBlocked = false,
+                AttemptsCount = 0
+            },
+            new Account
+            {
+                CardNumber = "1111111111111111",
+                PinCode = HashManager.HashPassword("1111"),
+                AvailableBalance = 1000,
+                IsBlocked = false,
+                AttemptsCount = 0
+            });
         }
     }
 }

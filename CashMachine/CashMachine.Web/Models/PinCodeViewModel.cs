@@ -7,6 +7,6 @@ namespace CashMachine.Web.Models
 {
     public class PinCodeViewModel
     {
-        public int PinCode { get; set; }
+        public string PinCode { get; set; }
     }
 }

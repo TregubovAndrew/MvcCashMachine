@@ -10,8 +10,6 @@ namespace CashMachine.DataAccess.Entities
     {
         public int Id { get; set; }
 
-        public string CardNumber { get; set; }
-
         public DateTime DateTime { get; set; }
 
         public string CodeOfOperation { get; set; }
