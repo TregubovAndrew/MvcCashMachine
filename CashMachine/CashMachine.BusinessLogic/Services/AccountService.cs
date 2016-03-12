@@ -42,9 +42,8 @@ namespace CashMachine.BusinessLogic.Services
 
         public void UnBlockAccount(Account account)
         {
-            const int generalAmountOfAttempts = 0;
             account.IsBlocked = false;
-            account.AttemptsCount = generalAmountOfAttempts;
+            account.AttemptsCount = 0;
             EditAccount(account);
         }
 
@@ -58,11 +57,13 @@ namespace CashMachine.BusinessLogic.Services
         public AuthResult Auth(string cardNumber, string pinCode)
         {
             var account = GetAccountByCardNumber(cardNumber);
-            const int zeroAttemptsCount = 0;
             const int maxAttemptsCount = 3;
+
+            if (account.IsBlocked)
+                return AuthResult.Blocked;
             if (account.PinCode == HashManager.HashPassword(pinCode))
             {
-                account.AttemptsCount = zeroAttemptsCount;
+                account.AttemptsCount = 0;
                 EditAccount(account);
                 return AuthResult.Success;
             }
@@ -72,8 +73,6 @@ namespace CashMachine.BusinessLogic.Services
                 BlockAccount(account);
                 return AuthResult.Blocked;
             }
-            if (account.IsBlocked)
-                return AuthResult.Blocked;
 
             account.DateOfLastFailedAttempt = DateTime.Now;
             account.AttemptsCount++;

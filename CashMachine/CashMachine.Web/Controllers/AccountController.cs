@@ -28,34 +28,32 @@ namespace CashMachine.Web.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Index(CardNumberViewModel model)
         {
-            if (ModelState.IsValid && model.CardNumber != null)
+            if (ModelState.IsValid)
             {
                 var account = _accountService.GetAccountByCardNumber(model.CardNumber);
-                if (model.CardNumber.Length < 16)
-                    ModelState.AddModelError("", "Введите все 16 цифр Вашей карточки");
-                if (account == null)
+                if (account != null)
                 {
-                    ModelState.AddModelError("", "Мы не смогли найти Вашу карточку");
-                }
-                else if (account.IsBlocked)
-                {
-                    //ModelState.AddModelError("","Ваша карточка заблокирована");
-                    return View("Error", new ErrorViewModel
+                    if (account.IsBlocked)
                     {
-                        Message = "Ваша карточка заблокирована",
-                        ReturnUrl = Request.Url.AbsolutePath
-                    });
+                        //ModelState.AddModelError("","Ваша карточка заблокирована");
+                        return View("Error", new ErrorViewModel
+                        {
+                            Message = "Ваша карточка заблокирована",
+                            ReturnUrl = Request.Url.AbsolutePath
+                        });
+                    }
+                    else
+                    {
+                        GetCurrentAccountInSession().CardNumber = account.CardNumber;
+                        return RedirectToAction("PinCode");
+                    }
                 }
-                else
-                {
-                    GetCurrentAccountInSession().CardNumber = account.CardNumber;
-                    return RedirectToAction("PinCode");
-                }
+                ModelState.AddModelError("","Ваша карта не найдена");
             }
             return View(model);
         }
 
-        
+
         [CheckCardNumberInput]
         public ActionResult PinCode()
         {
@@ -140,7 +138,7 @@ namespace CashMachine.Web.Controllers
             {
                 return View("WithdrawMoneyReport", new WithdrawMoneyReportViewModel
                 {
-                    CardNumber = currentAccount.CardNumber,
+                    CardNumber = "xxxxxxxxxxxx" + currentAccount.CardNumber.Substring(currentAccount.CardNumber.Length - 4, 4),
                     WithdrawedSum = model.Money,
                     Balance = currentAccount.AvailableBalance,
                     Date = DateTime.Now
