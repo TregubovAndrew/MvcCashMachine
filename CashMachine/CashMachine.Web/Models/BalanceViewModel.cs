@@ -5,14 +5,11 @@ using System.Web;
 
 namespace CashMachine.Web.Models
 {
-    public class AccountViewModel
+    public class BalanceViewModel
     {
         public string CardNumber { get; set; }
 
-        public int PinCode { get; set; }
-
         public decimal Money { get; set; }
-
 
     }
 }

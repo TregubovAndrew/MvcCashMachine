@@ -24,6 +24,16 @@ namespace CashMachine.Web.Filters
                             {"Action", "PinCode"}
                         });
                 }
+                else if (session == null || session.CardNumber == null)
+                {
+
+                    filterContext.Result = new RedirectToRouteResult(
+                        new RouteValueDictionary
+                        {
+                            {"Controller", "Account"},
+                            {"Action", "Index"}
+                        });
+                }
                 base.OnActionExecuting(filterContext);
             }
         }

@@ -8,7 +8,7 @@ using CashMachine.Web.Helpers;
 
 namespace CashMachine.Web.Filters
 {
-    public class CheckCardNumberInput : ActionFilterAttribute
+    public class CheckCardNumberInput :  ActionFilterAttribute
     {
         public override void OnActionExecuting(ActionExecutingContext filterContext)
         {

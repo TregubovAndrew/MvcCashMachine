@@ -18,7 +18,7 @@ namespace CashMachine.BusinessLogic.Interfaces
 
         AccountService.AuthResult Auth(string cardNumber, string pinCode);
 
-        bool TryWithdrawMoney(Account account, decimal sum);
+        DateTime WithdrawMoneyAndGetDate(Account account, decimal sum);
 
         void BalanceOperation(Account account);
 

@@ -3,6 +3,7 @@ using System.Net;
 using System.Web.Mvc;
 using CashMachine.BusinessLogic.Interfaces;
 using CashMachine.BusinessLogic.Services;
+using CashMachine.Web.Exceptions;
 using CashMachine.Web.Filters;
 using CashMachine.Web.Helpers;
 using CashMachine.Web.Models;
@@ -62,6 +63,7 @@ namespace CashMachine.Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [CheckCardNumberInput]
         public ActionResult PinCode(PinCodeViewModel model)
         {
             if (ModelState.IsValid)
@@ -115,7 +117,7 @@ namespace CashMachine.Web.Controllers
         {
             var currentAccount = _accountService.GetAccountByCardNumber(GetCurrentAccountInSession().CardNumber);
             _accountService.BalanceOperation(currentAccount);
-            return View(new AccountViewModel
+            return View(new BalanceViewModel
             {
                 CardNumber = currentAccount.CardNumber,
                 Money = currentAccount.AvailableBalance
@@ -131,34 +133,31 @@ namespace CashMachine.Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult WithdrawMoney(AccountViewModel model)
+        [CheckCardNumberInput]
+        [CheckFullAuthentication]
+        public ActionResult WithdrawMoney(WithdrawMoneyViewModel model)
         {
             var currentAccount = _accountService.GetAccountByCardNumber(GetCurrentAccountInSession().CardNumber);
-            if (_accountService.TryWithdrawMoney(currentAccount, model.Money))
+            try
             {
+                var date = _accountService.WithdrawMoneyAndGetDate(currentAccount, model.Money);
                 return View("WithdrawMoneyReport", new WithdrawMoneyReportViewModel
                 {
                     CardNumber = "xxxxxxxxxxxx" + currentAccount.CardNumber.Substring(currentAccount.CardNumber.Length - 4, 4),
                     WithdrawedSum = model.Money,
                     Balance = currentAccount.AvailableBalance,
-                    Date = DateTime.Now
+                    Date = date
+                });
+            }
+            catch (InsufficientFundsException ex)
+            {
+                return View("Error", new ErrorViewModel
+                {
+                    Message = ex.Message,
+                    ReturnUrl = Request.Url.AbsolutePath
                 });
             }
 
-            return View("Error", new ErrorViewModel
-            {
-                Message = "На Вашем счету недостаточно средств",
-                ReturnUrl = Request.Url.AbsolutePath
-            });
-
-
-        }
-
-        [CheckCardNumberInput]
-        [CheckFullAuthentication]
-        public ActionResult WithdrawMoneyReport()
-        {
-            return View();
         }
 
         [CheckCardNumberInput]

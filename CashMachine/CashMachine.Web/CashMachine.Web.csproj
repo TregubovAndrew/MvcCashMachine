@@ -139,7 +139,8 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Helpers\AccountSession.cs" />
-    <Compile Include="Models\AccountViewModel.cs" />
+    <Compile Include="Models\BalanceViewModel.cs" />
+    <Compile Include="Models\WithdrawMoneyViewModel.cs" />
     <Compile Include="Models\CardNumberViewModel.cs" />
     <Compile Include="Models\ErrorViewModel.cs" />
     <Compile Include="Models\PinCodeViewModel.cs" />
@@ -158,6 +159,7 @@
     <Content Include="Views\Account\WithdrawMoney.cshtml" />
     <Content Include="Views\Account\WithdrawMoneyReport.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
+    <Content Include="Views\Account\Keyboard.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

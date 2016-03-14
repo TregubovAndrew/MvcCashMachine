@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using CashMachine.DataAccess.Entities;
 using CashMachine.Web.Helpers;
 

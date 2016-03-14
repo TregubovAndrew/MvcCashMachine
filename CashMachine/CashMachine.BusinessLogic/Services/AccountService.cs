@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using CashMachine.BusinessLogic.Interfaces;
 using CashMachine.DataAccess.Entities;
 using CashMachine.DataAccess.Interfaces;
+using CashMachine.Web.Exceptions;
 using CashMachine.Web.Helpers;
 
 namespace CashMachine.BusinessLogic.Services
@@ -81,21 +82,26 @@ namespace CashMachine.BusinessLogic.Services
 
         }
 
-        public bool TryWithdrawMoney(Account account, decimal sum)
+        public DateTime WithdrawMoneyAndGetDate(Account account, decimal sum)
         {
+            if (sum <= 0)
+                throw new InsufficientFundsException("Введенная сумма должна быть положительной");
             if (account.AvailableBalance - sum >= 0)
             {
                 account.AvailableBalance -= sum;
-                account.Operations.Add(new Operation
+                var operation = new Operation
                 {
-                    DateTime = DateTime.Now,
+                    DateTime = DateTime.UtcNow,
                     CodeOfOperation = "снятие денег",
                     AccountId = account.Id
-                });
+                };
+                account.Operations.Add(operation);
                 EditAccount(account);
-                return true;
+                return operation.DateTime;
             }
-            return false;
+
+            throw new InsufficientFundsException("На Вашем счету недостаточно средств");
+
         }
 
         public void BalanceOperation(Account account)

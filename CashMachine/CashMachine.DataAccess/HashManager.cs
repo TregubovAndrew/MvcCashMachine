@@ -11,7 +11,7 @@ namespace CashMachine.Web.Helpers
     {
         public static string HashPassword(string password)
         {
-            var salt = GetBytes("salt");
+            var salt = Encoding.Unicode.GetBytes("salt");
             string saltedPassword = String.Concat(password, salt);
             using (MD5 md5 = MD5.Create())
             {
@@ -19,12 +19,5 @@ namespace CashMachine.Web.Helpers
                 return Convert.ToBase64String(saltedPasswordHash);
             }
         }
-        private static byte[] GetBytes(string str)
-        {
-            byte[] bytes = new byte[str.Length * sizeof(char)];
-            System.Buffer.BlockCopy(str.ToCharArray(), 0, bytes, 0, bytes.Length);
-            return bytes;
-        }
-
     }
 }
