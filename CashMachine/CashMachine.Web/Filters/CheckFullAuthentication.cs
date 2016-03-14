@@ -12,30 +12,28 @@ namespace CashMachine.Web.Filters
     {
         public override void OnActionExecuting(ActionExecutingContext filterContext)
         {
-            if (filterContext.HttpContext.Session != null)
+            var session = (AccountSession)filterContext.HttpContext.Session["account"];
+
+            if (session != null && session.CardNumber != null && !session.IsAuthenticated)
             {
-                var session = (AccountSession) filterContext.HttpContext.Session["account"];
-                if (session != null && session.CardNumber != null && !session.IsAuthenticated)
-                {
-                    filterContext.Result = new RedirectToRouteResult(
-                        new RouteValueDictionary
+                filterContext.Result = new RedirectToRouteResult(
+                    new RouteValueDictionary
                         {
                             {"Controller", "Account"},
                             {"Action", "PinCode"}
                         });
-                }
-                else if (session == null || session.CardNumber == null)
-                {
+            }
+            else if (session == null || session.CardNumber == null)
+            {
 
-                    filterContext.Result = new RedirectToRouteResult(
-                        new RouteValueDictionary
+                filterContext.Result = new RedirectToRouteResult(
+                    new RouteValueDictionary
                         {
                             {"Controller", "Account"},
                             {"Action", "Index"}
                         });
-                }
-                base.OnActionExecuting(filterContext);
             }
+            base.OnActionExecuting(filterContext);
         }
     }
 }

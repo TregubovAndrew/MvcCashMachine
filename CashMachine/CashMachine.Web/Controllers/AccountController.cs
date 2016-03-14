@@ -116,11 +116,12 @@ namespace CashMachine.Web.Controllers
         public ActionResult Balance()
         {
             var currentAccount = _accountService.GetAccountByCardNumber(GetCurrentAccountInSession().CardNumber);
-            _accountService.BalanceOperation(currentAccount);
+            var operation = _accountService.BalanceOperation(currentAccount);
             return View(new BalanceViewModel
             {
                 CardNumber = currentAccount.CardNumber,
-                Money = currentAccount.AvailableBalance
+                Money = currentAccount.AvailableBalance,
+                DateTime = operation.DateTime.ToLocalTime()
             });
         }
 
@@ -137,27 +138,30 @@ namespace CashMachine.Web.Controllers
         [CheckFullAuthentication]
         public ActionResult WithdrawMoney(WithdrawMoneyViewModel model)
         {
-            var currentAccount = _accountService.GetAccountByCardNumber(GetCurrentAccountInSession().CardNumber);
-            try
+            if (ModelState.IsValid)
             {
-                var date = _accountService.WithdrawMoneyAndGetDate(currentAccount, model.Money);
-                return View("WithdrawMoneyReport", new WithdrawMoneyReportViewModel
+                var currentAccount = _accountService.GetAccountByCardNumber(GetCurrentAccountInSession().CardNumber);
+                try
                 {
-                    CardNumber = "xxxxxxxxxxxx" + currentAccount.CardNumber.Substring(currentAccount.CardNumber.Length - 4, 4),
-                    WithdrawedSum = model.Money,
-                    Balance = currentAccount.AvailableBalance,
-                    Date = date
-                });
-            }
-            catch (InsufficientFundsException ex)
-            {
-                return View("Error", new ErrorViewModel
+                    var operation = _accountService.WithdrawMoneyAndGetOperation(currentAccount, model.Money);
+                    return View("WithdrawMoneyReport", new WithdrawMoneyReportViewModel
+                    {
+                        CardNumber = "xxxxxxxxxxxx" + currentAccount.CardNumber.Substring(currentAccount.CardNumber.Length - 4, 4),
+                        WithdrawedSum = model.Money,
+                        Balance = currentAccount.AvailableBalance,
+                        Date = operation.DateTime.ToLocalTime()
+                    });
+                }
+                catch (InsufficientFundsException ex)
                 {
-                    Message = ex.Message,
-                    ReturnUrl = Request.Url.AbsolutePath
-                });
+                    return View("Error", new ErrorViewModel
+                    {
+                        Message = ex.Message,
+                        ReturnUrl = Request.Url.AbsolutePath
+                    });
+                }
             }
-
+            return View();
         }
 
         [CheckCardNumberInput]

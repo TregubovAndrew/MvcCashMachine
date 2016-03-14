@@ -82,10 +82,10 @@ namespace CashMachine.BusinessLogic.Services
 
         }
 
-        public DateTime WithdrawMoneyAndGetDate(Account account, decimal sum)
+        public Operation WithdrawMoneyAndGetOperation(Account account, decimal sum)
         {
             if (sum <= 0)
-                throw new InsufficientFundsException("Введенная сумма должна быть положительной");
+                throw new ArgumentException("sum is less than zero");
             if (account.AvailableBalance - sum >= 0)
             {
                 account.AvailableBalance -= sum;
@@ -97,22 +97,24 @@ namespace CashMachine.BusinessLogic.Services
                 };
                 account.Operations.Add(operation);
                 EditAccount(account);
-                return operation.DateTime;
+                return operation;
             }
 
             throw new InsufficientFundsException("На Вашем счету недостаточно средств");
 
         }
 
-        public void BalanceOperation(Account account)
+        public Operation BalanceOperation(Account account)
         {
-            account.Operations.Add(new Operation
+            var operation = new Operation
             {
-                DateTime = DateTime.Now,
+                DateTime = DateTime.UtcNow,
                 CodeOfOperation = "просмотр баланса",
                 AccountId = account.Id
-            });
+            };
+            account.Operations.Add(operation);
             EditAccount(account);
+            return operation;
         }
     }
 }

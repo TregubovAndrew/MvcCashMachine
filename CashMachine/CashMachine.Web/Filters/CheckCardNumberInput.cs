@@ -8,24 +8,22 @@ using CashMachine.Web.Helpers;
 
 namespace CashMachine.Web.Filters
 {
-    public class CheckCardNumberInput :  ActionFilterAttribute
+    public class CheckCardNumberInput : ActionFilterAttribute
     {
         public override void OnActionExecuting(ActionExecutingContext filterContext)
         {
-            if (filterContext.HttpContext.Session != null)
+            var session = (AccountSession)filterContext.HttpContext.Session["account"];
+
+            if (session == null)
             {
-                var session = (AccountSession)filterContext.HttpContext.Session["account"];
-                if (session == null)
-                {
-                    filterContext.Result = new RedirectToRouteResult(
-                        new RouteValueDictionary
+                filterContext.Result = new RedirectToRouteResult(
+                    new RouteValueDictionary
                         {
                             {"Controller", "Account"},
                             {"Action", "Index"}
                         });
-                }
-                base.OnActionExecuting(filterContext);
             }
+            base.OnActionExecuting(filterContext);
         }
     }
 }

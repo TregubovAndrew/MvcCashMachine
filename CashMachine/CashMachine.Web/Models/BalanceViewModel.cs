@@ -11,5 +11,7 @@ namespace CashMachine.Web.Models
 
         public decimal Money { get; set; }
 
+        public DateTime DateTime { get; set; }
+
     }
 }
