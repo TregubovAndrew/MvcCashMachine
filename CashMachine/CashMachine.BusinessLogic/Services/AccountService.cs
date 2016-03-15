@@ -100,7 +100,7 @@ namespace CashMachine.BusinessLogic.Services
                 return operation;
             }
 
-            throw new InsufficientFundsException("На Вашем счету недостаточно средств");
+            throw new InsufficientFundsException("sum is more than available balance");
 
         }
 

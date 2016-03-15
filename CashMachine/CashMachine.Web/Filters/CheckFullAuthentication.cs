@@ -12,7 +12,7 @@ namespace CashMachine.Web.Filters
     {
         public override void OnActionExecuting(ActionExecutingContext filterContext)
         {
-            var session = (AccountSession)filterContext.HttpContext.Session["account"];
+            var session = (AccountSession)filterContext.HttpContext.Session[SessionKeys.AccountSessionKey];
 
             if (session != null && session.CardNumber != null && !session.IsAuthenticated)
             {

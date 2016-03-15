@@ -139,6 +139,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Helpers\AccountSession.cs" />
+    <Compile Include="Helpers\SessionKeys.cs" />
     <Compile Include="Models\BalanceViewModel.cs" />
     <Compile Include="Models\WithdrawMoneyViewModel.cs" />
     <Compile Include="Models\CardNumberViewModel.cs" />

@@ -95,11 +95,11 @@ namespace CashMachine.Web.Controllers
 
         private AccountSession GetCurrentAccountInSession()
         {
-            var account = (AccountSession)Session["account"];
+            var account = (AccountSession)Session[SessionKeys.AccountSessionKey];
             if (account == null)
             {
                 account = new AccountSession();
-                Session["account"] = account;
+                Session[SessionKeys.AccountSessionKey] = account;
             }
             return account;
         }
@@ -152,11 +152,11 @@ namespace CashMachine.Web.Controllers
                         Date = operation.DateTime.ToLocalTime()
                     });
                 }
-                catch (InsufficientFundsException ex)
+                catch (InsufficientFundsException)
                 {
                     return View("Error", new ErrorViewModel
                     {
-                        Message = ex.Message,
+                        Message = "На Вашем счету недостаточно средств",
                         ReturnUrl = Request.Url.AbsolutePath
                     });
                 }
